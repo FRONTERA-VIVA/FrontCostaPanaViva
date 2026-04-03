@@ -1,0 +1,881 @@
+================================================================================
+                    PLATAFORMA WEB TURÍSTICA FRONTERIZA
+                         PANAMÁ – COSTA RICA
+              DOCUMENTACIÓN DE ARQUITECTURA DEL FRONTEND
+================================================================================
+
+Versión: 1.0
+Fecha: 2024
+Tecnología Base: React 18+ + PostgreSQL
+Instituciones: UNACHI (CRUBA) y UTP
+================================================================================
+
+TABLA DE CONTENIDOS
+================================================================================
+1. VISIÓN GENERAL DEL PROYECTO
+2. STACK TECNOLÓGICO
+3. ARQUITECTURA DE CARPETAS
+4. COMPONENTES DEL SISTEMA
+5. FLUJO DE DATOS
+6. INTEGRACIÓN CON BACKEND
+7. TRAZABILIDAD DE REQUERIMIENTOS
+8. CONFIGURACIÓN Y DESPLIEGUE
+9. CONSIDERACIONES DE SEGURIDAD
+10. MÓDULOS ESPECIALES
+
+================================================================================
+1. VISIÓN GENERAL DEL PROYECTO
+================================================================================
+
+PROPÓSITO:
+----------
+Herramienta viva que conecta a los visitantes con los lugares, las personas y 
+los negocios que hacen única a la región fronteriza entre Panamá y Costa Rica.
+
+OBJETIVOS PRINCIPALES:
+----------------------
+1. Proporcionar información turística confiable y actualizada
+2. Promover emprendimientos y negocios locales
+3. Facilitar la exploración de la región fronteriza
+4. Ofrecer información práctica para el tránsito fronterizo
+5. Ser accesible sin necesidad de crear cuenta (panel público)
+
+USUARIOS OBJETIVO:
+------------------
+1. Turistas nacionales y extranjeros
+2. Emprendedores y comerciantes locales
+3. Administradores de la plataforma
+
+================================================================================
+2. STACK TECNOLÓGICO
+================================================================================
+
+FRONTEND:
+---------
+- React 18 o superior (Componentes funcionales y hooks modernos)
+- React Router (Navegación entre vistas - Doc 1, Req 19)
+- Tailwind CSS (Diseño responsive y moderno)
+- Leaflet.js + React Leaflet (Mapas interactivos - Doc 2, Sec 3)
+- Axios (Consumo de API - Doc 1, Req 20)
+- React Hook Form + Yup (Formularios y validación)
+- i18next (Internacionalización ES/EN - Doc 3, Sec 5.7)
+
+BACKEND:
+--------
+- Node.js + Express (API REST - Doc 2, Sec 2)
+- PostgreSQL (Base de datos relacional - Doc 1, Sec 3.2)
+- Prisma o Sequelize (ORM - Doc 2, Sec 2)
+- JWT (Autenticación con tokens de acceso y refresco - Doc 2, Sec 3)
+- Bcrypt (Encriptación de contraseñas - Doc 2, Sec 3)
+
+SERVICIOS EXTERNOS:
+-------------------
+- Cloudinary (Almacenamiento y optimización de imágenes - Doc 2, Sec 2)
+- Leaflet Tiles Provider (Mapas base)
+
+DESPLIEGUE:
+-----------
+- Frontend: Vercel o Netlify (Doc 2, Sec 3)
+- Backend: Railway o Render (Doc 2, Sec 3)
+- Contenedores: Docker (opcional - Doc 2, Sec 3)
+
+================================================================================
+3. ARQUITECTURA DE CARPETAS
+================================================================================
+
+client/
+├── public/
+│   ├── favicon.ico              # Icono de pestaña del navegador
+│   ├── manifest.json            # Configuración PWA (Doc 3, Sec 5.8)
+│   └── images/
+│       └── logo.svg             # Logo principal vectorial
+│
+├── src/
+│   ├── assets/                  # Recursos estáticos importados
+│   │   ├── images/              # Imágenes del UI (fondos, ilustraciones)
+│   │   └── icons/               # Iconos SVG personalizados
+│   │
+│   ├── components/              # Componentes reutilizables
+│   │   ├── ui/                  # Átomos de diseño (Design System)
+│   │   ├── layout/              # Estructuras de página (Navbar, Footer)
+│   │   ├── cards/               # Tarjetas de entidades (Lugares, Emprendimientos)
+│   │   ├── maps/                # Componentes de Leaflet
+│   │   ├── forms/               # Formularios controlados
+│   │   ├── modals/              # Ventanas emergentes
+│   │   └── analytics/           # Widgets de estadísticas
+│   │
+│   ├── config/                  # Configuraciones globales
+│   │   ├── api.js               # Configuración de Axios
+│   │   ├── maps.js              # Configuración de Leaflet
+│   │   ├── cloudinary.js        # Configuración de imágenes
+│   │   └── i18n.js              # Configuración de idiomas
+│   │
+│   ├── context/                 # Estado global (Context API)
+│   │   ├── AuthContext.jsx      # Gestión de autenticación (Doc 2, Sec 3)
+│   │   ├── LanguageContext.jsx  # Gestión de idioma (Doc 3, Sec 5.7)
+│   │   ├── FilterContext.jsx    # Filtros globales (Doc 1, Req 4)
+│   │   └── FavoritesContext.jsx # Favoritos de usuario (Doc 3, Sec 5.1.7)
+│   │
+│   ├── hooks/                   # Custom hooks reutilizables
+│   │   ├── useFetch.js          # Peticiones HTTP (Doc 1, Req 20)
+│   │   ├── useGeoLocation.js    # Geolocalización (Doc 3, Sec 5.2.5)
+│   │   ├── useOffline.js        # Detección offline (Doc 3, Sec 5.8)
+│   │   ├── useAnalytics.js      # Métricas de uso (Doc 3, Sec 5.9)
+│   │   └── useDebounce.js       # Optimización de búsquedas
+│   │
+│   ├── layouts/                 # Envoltorios de página completos
+│   │   ├── PublicLayout.jsx     # Layout para rutas públicas
+│   │   └── AdminLayout.jsx      # Layout para rutas admin
+│   │
+│   ├── pages/                   # Vistas principales (Rutas)
+│   │   ├── public/              # Páginas accesibles sin login
+│   │   │   ├── Home.jsx         # Página de inicio (Doc 2, Sec 4)
+│   │   │   ├── Explorer.jsx     # Directorio de búsqueda (Doc 3, Sec 5.1)
+│   │   │   ├── MapPage.jsx      # Vista de mapa completo (Doc 3, Sec 5.2)
+│   │   │   ├── DetailsPage.jsx  # Ficha detallada (Doc 3, Sec 5.1.4)
+│   │   │   ├── BorderInfo.jsx   # Información fronteriza (Doc 3, Sec 5.6)
+│   │   │   └── Postulate.jsx    # Formulario de postulación (Doc 3, Sec 5.4)
+│   │   │
+│   │   └── admin/               # Páginas protegidas (requieren login)
+│   │       ├── Login.jsx        # Inicio de sesión (Doc 3, Sec 5.5.1)
+│   │       ├── Dashboard.jsx    # Panel principal (Doc 3, Sec 5.9)
+│   │       ├── CrudLugares.jsx  # CRUD lugares turísticos (Doc 1, Req 7-9)
+│   │       ├── CrudEmprendimientos.jsx  # CRUD emprendimientos
+│   │       ├── CrudEmpresas.jsx         # CRUD empresas
+│   │       ├── ReviewQueue.jsx  # Cola de solicitudes (Doc 3, Sec 5.5.3)
+│   │       ├── CategoryManager.jsx  # Gestión categorías (Doc 3, Sec 5.5.4)
+│   │       ├── ImageManager.jsx     # Gestión imágenes (Doc 3, Sec 5.5.5)
+│   │       └── UserManager.jsx      # Gestión usuarios (Doc 3, Sec 5.5.7)
+│   │
+│   ├── services/                # Capa de comunicación con API
+│   │   ├── api.js               # Instancia base de Axios
+│   │   ├── auth.service.js      # Servicios de autenticación
+│   │   ├── lugares.service.js   # CRUD de lugares
+│   │   ├── emprendimientos.service.js  # CRUD de emprendimientos
+│   │   ├── empresas.service.js         # CRUD de empresas
+│   │   ├── categorias.service.js       # CRUD de categorías
+│   │   ├── solicitudes.service.js      # Gestión de postulaciones
+│   │   └── analytics.service.js        # Métricas y estadísticas
+│   │
+│   ├── utils/                   # Funciones utilitarias
+│   │   ├── validators.js        # Esquemas de validación Yup (Doc 1, Req 56)
+│   │   ├── formatters.js        # Formato de fechas, monedas, textos
+│   │   └── constants.js         # Constantes globales (roles, estados)
+│   │
+│   ├── i18n/                    # Internacionalización
+│   │   ├── es.json              # Traducciones Español (Doc 3, Sec 5.7)
+│   │   ├── en.json              # Traducciones Inglés (Doc 3, Sec 5.7)
+│   │   └── config.js            # Configuración de i18next
+│   │
+│   ├── App.jsx                  # Componente raíz con rutas (Doc 1, Req 19)
+│   ├── Main.jsx                 # Punto de montaje en DOM (Doc 1, Req 17)
+│   └── index.css                # Estilos globales con Tailwind (Doc 2, Sec 4)
+│
+├── package.json                 # Dependencias y scripts
+├── tailwind.config.js           # Configuración de diseño
+├── vite.config.js               # Configuración del bundler
+└── .env                         # Variables de entorno (no commitear)
+
+================================================================================
+4. COMPONENTES DEL SISTEMA
+================================================================================
+
+4.1 COMPONENTES UI (src/components/ui/)
+---------------------------------------
+
+Button.jsx
+  FUNCIÓN: Elemento de acción clickable reutilizable
+  CONTENIDO: Variantes (primary, outline, ghost, danger), estados (loading, 
+             disabled), soporte para iconos
+  REQUERIMIENTO: Doc 1, Req 52 (Componentes reutilizables)
+
+Input.jsx
+  FUNCIÓN: Campo de entrada de texto controlado
+  CONTENIDO: Validación visual, etiquetas, mensajes de error, tipos variados
+  REQUERIMIENTO: Doc 1, Req 56 (Validación cliente)
+
+Select.jsx
+  FUNCIÓN: Menú desplegable de opciones
+  CONTENIDO: Opciones dinámicas, búsqueda interna, multi-select
+  REQUERIMIENTO: Doc 1, Req 4 (Filtros por categorías)
+
+Card.jsx
+  FUNCIÓN: Contenedor base de información
+  CONTENIDO: Bordes, sombras, estructura interna flexible
+  REQUERIMIENTO: Doc 1, Req 52 (Componentes reutilizables)
+
+Badge.jsx
+  FUNCIÓN: Etiqueta de estado o categoría
+  CONTENIDO: Colores según estado (verde=verificado, amarillo=pendiente)
+  REQUERIMIENTO: Doc 3, Sec 5.1.4 (Estado de verificación)
+
+Loader.jsx
+  FUNCIÓN: Indicador de carga de contenido
+  CONTENIDO: Spinners, skeletons para contenido asíncrono
+  REQUERIMIENTO: Doc 3, Sec 6.1 (Rendimiento)
+
+Modal.jsx
+  FUNCIÓN: Ventana emergente genérica
+  CONTENIDO: Encabezado, cuerpo, pie de acción, cierre externo
+  REQUERIMIENTO: Doc 1, Req 52 (Componentes reutilizables)
+
+Pagination.jsx
+  FUNCIÓN: Navegación entre páginas de datos
+  CONTENIDO: Botones anterior/siguiente, números de página, total
+  REQUERIMIENTO: Doc 3, Sec 6.1.3 (Listados extensos)
+
+SearchInput.jsx
+  FUNCIÓN: Buscador global con debounce
+  CONTENIDO: Icono de lupa, limpieza de texto, búsqueda tiempo real
+  REQUERIMIENTO: Doc 1, Req 5 (Búsquedas tiempo real)
+
+LanguageSwitcher.jsx
+  FUNCIÓN: Selector de idioma de la interfaz
+  CONTENIDO: Toggle ES/EN, persistencia en localStorage
+  REQUERIMIENTO: Doc 3, Sec 5.7 (Módulo multilingüe)
+
+VerificationBadge.jsx
+  FUNCIÓN: Indicador visual de confianza
+  CONTENIDO: Icono de check, tooltip explicativo
+  REQUERIMIENTO: Doc 3, Sec 5.1.4 (Estado de verificación)
+
+OfflineIndicator.jsx
+  FUNCIÓN: Aviso de estado de conectividad
+  CONTENIDO: Banner superior informando modo offline
+  REQUERIMIENTO: Doc 3, Sec 5.8 (Módulo offline)
+
+AlertsBanner.jsx
+  FUNCIÓN: Notificaciones importantes temporales
+  CONTENIDO: Alertas fronterizas (cierre de paso, clima, movilidad)
+  REQUERIMIENTO: Doc 3, Sec 5.6.5 (Alertas informativas)
+
+4.2 COMPONENTES LAYOUT (src/components/layout/)
+-----------------------------------------------
+
+PublicLayout.jsx
+  FUNCIÓN: Envoltorio para todas las vistas públicas
+  CONTENIDO: Integra Navbar, Footer y área de contenido principal
+  REQUERIMIENTO: Doc 2, Sec 4 (Secciones de la página)
+
+AdminLayout.jsx
+  FUNCIÓN: Envoltorio para todas las vistas de administrador
+  CONTENIDO: Integra Sidebar, TopBar y área de contenido
+  REQUERIMIENTO: Doc 3, Sec 5.5 (Panel de administración)
+
+Navbar.jsx
+  FUNCIÓN: Navegación principal pública fija
+  CONTENIDO: Logo, enlaces principales, buscador, login, menú móvil
+  REQUERIMIENTO: Doc 2, Sec 4 (Navegación fija y visible)
+
+Footer.jsx
+  FUNCIÓN: Pie de página público
+  CONTENIDO: Enlaces legales, redes sociales, créditos institucionales
+  REQUERIMIENTO: Doc 2, Sec 4 (Identidad de la región)
+
+AdminSidebar.jsx
+  FUNCIÓN: Navegación lateral del panel admin
+  CONTENIDO: Menú de módulos (Lugares, Usuarios, Categorías, etc.)
+  REQUERIMIENTO: Doc 3, Sec 5.5 (Panel organizado en secciones)
+
+AdminTopBar.jsx
+  FUNCIÓN: Barra superior del panel admin
+  CONTENIDO: Perfil de usuario, notificaciones, botón logout
+  REQUERIMIENTO: Doc 3, Sec 5.5 (Acceso seguro)
+
+4.3 COMPONENTES CARDS (src/components/cards/)
+---------------------------------------------
+
+CardLugares.jsx
+  FUNCIÓN: Mostrar resumen de lugar turístico
+  CONTENIDO: Foto principal, nombre, categoría, ubicación, badge verificación
+  REQUERIMIENTO: Doc 1, Req 1 (Visualizar puntos turísticos)
+
+CardEmprendimiento.jsx
+  FUNCIÓN: Mostrar resumen de emprendimiento local
+  CONTENIDO: Foto, nombre responsable, tipo, contacto rápido
+  REQUERIMIENTO: Doc 1, Req 3 (Explorar emprendimientos)
+
+CardEmpresa.jsx
+  FUNCIÓN: Mostrar resumen de empresa/comercio
+  CONTENIDO: Logo, servicios, dirección, sitio web
+  REQUERIMIENTO: Doc 1, Req 3 (Explorar empresas)
+
+CardServicioFronterizo.jsx
+  FUNCIÓN: Mostrar resumen de servicio crítico de frontera
+  CONTENIDO: Tipo (cambio/transporte), vigencia, alerta si aplica
+  REQUERIMIENTO: Doc 3, Sec 5.3 (Servicios críticos de frontera)
+
+4.4 COMPONENTES MAPS (src/components/maps/)
+-------------------------------------------
+
+InteractiveMap.jsx
+  FUNCIÓN: Contenedor principal del mapa Leaflet
+  CONTENIDO: Configuración de capas, zoom inicial, centro del mapa
+  REQUERIMIENTO: Doc 2, Sec 3 (Mapas interactivos)
+
+CustomMarkers.jsx
+  FUNCIÓN: Renderizar marcadores personalizados
+  CONTENIDO: Íconos diferenciados por categoría (color/forma)
+  REQUERIMIENTO: Doc 3, Sec 5.2.1 (Marcadores diferenciados)
+
+MapPopup.jsx
+  FUNCIÓN: Mostrar información al clickear marcador
+  CONTENIDO: Resumen corto, foto pequeña, botón "Ver más detalles"
+  REQUERIMIENTO: Doc 3, Sec 5.2.3 (Resumen rápido en mapa)
+
+GeoLocationButton.jsx
+  FUNCIÓN: Botón para obtener ubicación actual
+  CONTENIDO: Icono de target, lógica para pedir permiso GPS
+  REQUERIMIENTO: Doc 3, Sec 5.2.5 (Ver ubicación actual)
+
+MapLegend.jsx
+  FUNCIÓN: Mostrar leyenda de categorías del mapa
+  CONTENIDO: Lista de categorías con sus colores e íconos asociados
+  REQUERIMIENTO: Doc 3, Sec 5.2 (Navegación por zonas)
+
+ClusterGroup.jsx
+  FUNCIÓN: Agrupar marcadores cercanos
+  CONTENIDO: Lógica para clustering cuando hay zoom out
+  REQUERIMIENTO: Doc 3, Sec 5.2.2 (Agrupación por capas)
+
+4.5 COMPONENTES FORMS (src/components/forms/)
+---------------------------------------------
+
+SubmissionForm.jsx
+  FUNCIÓN: Formulario público de postulación
+  CONTENIDO: Campos guiados para emprendedores, validación Yup
+  REQUERIMIENTO: Doc 3, Sec 5.4.2 (Formulario guiado desde celular)
+
+ImageUpload.jsx
+  FUNCIÓN: Subida de archivos multimedia
+  CONTENIDO: Drag & drop, preview, progreso de subida a Cloudinary
+  REQUERIMIENTO: Doc 2, Sec 2 (Imágenes en Cloudinary)
+
+LocationPicker.jsx
+  FUNCIÓN: Selector de coordenadas geográficas
+  CONTENIDO: Mini mapa para picking de lat/long, input manual
+  REQUERIMIENTO: Doc 3, Sec 5.4.3 (Adjuntar ubicación)
+
+ContactForm.jsx
+  FUNCIÓN: Formulario de contacto general
+  CONTENIDO: Nombre, correo, mensaje, envío a administradores
+  REQUERIMIENTO: Doc 2, Sec 4 (Sección de contacto)
+
+AdminForm.jsx
+  FUNCIÓN: Formulario genérico para CRUD admin
+  CONTENIDO: Campos dinámicos según entidad, edición completa
+  REQUERIMIENTO: Doc 1, Req 7-8 (Crear y editar registros)
+
+LoginForm.jsx
+  FUNCIÓN: Acceso al panel de administrador
+  CONTENIDO: Email, password, manejo de errores de autenticación
+  REQUERIMIENTO: Doc 2, Sec 3 (Autenticación JWT)
+
+4.6 COMPONENTES MODALS (src/components/modals/)
+-----------------------------------------------
+
+ConfirmationModal.jsx
+  FUNCIÓN: Confirmación de acciones importantes
+  CONTENIDO: Mensaje personalizado, botones aceptar/cancelar
+  REQUERIMIENTO: Doc 3, Sec 5.4.5 (Confirmación de estado)
+
+DeleteConfirmModal.jsx
+  FUNCIÓN: Confirmación de eliminación de registros
+  CONTENIDO: Advertencia de irreversibilidad, validación extra
+  REQUERIMIENTO: Doc 1, Req 9 (Eliminar registros)
+
+ImagePreviewModal.jsx
+  FUNCIÓN: Visor de imágenes ampliadas
+  CONTENIDO: Galería lightbox, zoom, opción de descarga
+  REQUERIMIENTO: Doc 3, Sec 5.5.5 (Gestionar imágenes)
+
+4.7 COMPONENTES ANALYTICS (src/components/analytics/)
+-----------------------------------------------------
+
+Analytics.jsx
+  FUNCIÓN: Widgets de estadísticas para dashboard
+  CONTENIDO: Gráficos simples, contadores (vistas, búsquedas, pendientes)
+  REQUERIMIENTO: Doc 3, Sec 5.9 (Módulo de analítica operativa)
+
+================================================================================
+5. FLUJO DE DATOS
+================================================================================
+
+5.1 FLUJO PÚBLICO (Usuario sin cuenta)
+--------------------------------------
+
+1. Usuario abre la plataforma → Main.jsx monta App.jsx
+2. App.jsx carga PublicLayout (Navbar + Footer + Contenido)
+3. Usuario navega por Home/Explorer/Mapa/Details
+4. Componentes solicitan datos vía services/ → api.js (Axios)
+5. Backend responde con JSON → Componentes renderizan información
+6. Usuario puede guardar favoritos (FavoritesContext - localStorage)
+7. Usuario puede postular su negocio (Postulate.jsx → solicitudes.service.js)
+
+5.2 FLUJO ADMINISTRADOR (Usuario autenticado)
+---------------------------------------------
+
+1. Admin accede a /admin/login → LoginForm.jsx
+2. Credenciales validadas → auth.service.js → Backend
+3. Backend retorna JWT (access + refresh tokens)
+4. AuthContext guarda tokens y datos de usuario
+5. Admin accede a rutas protegidas (ProtectedRoute wrapper)
+6. AdminLayout carga con Sidebar + TopBar
+7. Admin realiza CRUD → services/ → Backend → PostgreSQL
+8. Logout invalida tokens y redirige a login
+
+5.3 FLUJO DE IMÁGENES
+---------------------
+
+1. Usuario/Admin selecciona imagen → ImageUpload.jsx
+2. Imagen se envía directamente a Cloudinary (preset configurado)
+3. Cloudinary retorna URL de imagen optimizada
+4. URL se guarda en PostgreSQL como referencia
+5. Frontend carga imágenes desde Cloudinary con transformaciones
+6. ServiceWorker cachea imágenes para modo offline (Doc 3, Sec 5.8.2)
+
+5.4 FLUJO OFFLINE
+-----------------
+
+1. useOffline.js detecta pérdida de conexión
+2. OfflineIndicator.jsx muestra banner de aviso
+3. ServiceWorker sirve páginas cacheadas (Doc 3, Sec 5.8.1)
+4. Formularios completados se guardan en IndexedDB
+5. Al recuperar conexión, useOffline.js sincroniza datos pendientes
+6. Usuario recibe confirmación de sincronización
+
+================================================================================
+6. INTEGRACIÓN CON BACKEND
+================================================================================
+
+6.1 ENDPOINTS PRINCIPALES (API REST)
+------------------------------------
+
+AUTENTICACIÓN:
+  POST   /api/auth/login          → Iniciar sesión admin
+  POST   /api/auth/refresh        → Refrescar token
+  POST   /api/auth/logout         → Cerrar sesión
+
+LUGARES TURÍSTICOS:
+  GET    /api/lugares             → Listar lugares (público)
+  GET    /api/lugares/:id         → Obtener detalle (público)
+  POST   /api/lugares             → Crear lugar (admin)
+  PUT    /api/lugares/:id         → Actualizar lugar (admin)
+  DELETE /api/lugares/:id         → Eliminar lugar (admin)
+
+EMPRENDIMIENTOS:
+  GET    /api/emprendimientos     → Listar emprendimientos (público)
+  GET    /api/emprendimientos/:id → Obtener detalle (público)
+  POST   /api/emprendimientos     → Crear emprendimiento (admin)
+  PUT    /api/emprendimientos/:id → Actualizar (admin)
+  DELETE /api/emprendimientos/:id → Eliminar (admin)
+
+EMPRESAS:
+  GET    /api/empresas            → Listar empresas (público)
+  GET    /api/empresas/:id        → Obtener detalle (público)
+  POST   /api/empresas            → Crear empresa (admin)
+  PUT    /api/empresas/:id        → Actualizar (admin)
+  DELETE /api/empresas/:id        → Eliminar (admin)
+
+SERVICIOS FRONTERIZOS:
+  GET    /api/servicios-frontera  → Listar servicios (público)
+  POST   /api/servicios-frontera  → Crear servicio (admin)
+  PUT    /api/servicios-frontera/:id → Actualizar (admin)
+
+CATEGORÍAS:
+  GET    /api/categorias          → Listar categorías (público)
+  POST   /api/categorias          → Crear categoría (admin)
+  PUT    /api/categorias/:id      → Actualizar (admin)
+  DELETE /api/categorias/:id      → Eliminar (admin)
+
+SOLICITUDES:
+  POST   /api/solicitudes         → Enviar postulación (público)
+  GET    /api/solicitudes         → Listar solicitudes (admin)
+  PUT    /api/solicitudes/:id     → Revisar solicitud (admin)
+
+ANALÍTICA:
+  GET    /api/analytics/estadisticas  → Estadísticas dashboard (admin)
+  GET    /api/analytics/busquedas     → Búsquedas frecuentes (admin)
+  GET    /api/analytics/vistas        → Registros más vistos (admin)
+
+6.2 CONFIGURACIÓN DE AXIOS (src/config/api.js)
+----------------------------------------------
+
+- Base URL desde variables de entorno (.env)
+- Interceptor de request: Adjunta token JWT automáticamente
+- Interceptor de response: Maneja errores 401 (refresh token)
+- Timeout configurado para redes móviles
+- Headers comunes (Content-Type: application/json)
+
+6.3 MANEJO DE ERRORES
+---------------------
+
+- Errores 400: Validación de datos (mostrar mensajes de Yup)
+- Errores 401: Redirigir a login o refrescar token
+- Errores 403: Mostrar mensaje de permiso denegado
+- Errores 404: Mostrar página no encontrada
+- Errores 500: Mostrar mensaje genérico de error del servidor
+- Errores de red: Activar OfflineIndicator y reintentar
+
+================================================================================
+7. TRAZABILIDAD DE REQUERIMIENTOS
+================================================================================
+
+DOCUMENTO 1 (requerimientos_turisticos.docx):
+---------------------------------------------
+Req 1-6   → Panel Usuario (Explorer, MapPage, DetailsPage)
+Req 7-11  → Panel Admin (CrudLugares, CrudEmprendimientos, UserManager)
+Req 12-16 → No Funcionales (optimización, seguridad, usabilidad)
+Req 17-20 → Técnicos Frontend (React, Router, Axios, Estado)
+Req 21-26 → Base de Datos e Integración (PostgreSQL, API REST, JSON)
+Req 27-51 → Estructura de Información (Entidades en BD)
+Req 52-56 → Interfaz (Componentes, SPA, Responsive, Mapas, Formularios)
+Req 57-64 → Paneles del Sistema (Público y Admin)
+
+DOCUMENTO 2 (Proyecto Turistico PMA Y CR.docx):
+-----------------------------------------------
+Sec 1     → Visión del proyecto (Home, Explorer, Details)
+Sec 2     → Arquitectura (React, Node, PostgreSQL, Cloudinary)
+Sec 3     → Herramientas (Leaflet, React Hook Form, JWT, Bcrypt)
+Sec 4     → Secciones y Diseño (Navbar, Footer, Colores naturaleza)
+Sec 5     → Requerimientos completos (Funcionales, No Funcionales, Técnicos)
+Sec 6     → Fases de desarrollo (BD → API → Frontend → Admin → Tests)
+
+DOCUMENTO 3 (Propuesta requerimientos.docx):
+--------------------------------------------
+Sec 5.1   → Módulo exploración (Explorer, MapPage, DetailsPage)
+Sec 5.2   → Módulo mapa (InteractiveMap, CustomMarkers, MapPopup)
+Sec 5.3   → Módulo directorio (5 tipos de registro, 7 clasificaciones)
+Sec 5.4   → Módulo postulación (Postulate, SubmissionForm)
+Sec 5.5   → Módulo admin (Login, Dashboard, CRUD, ReviewQueue)
+Sec 5.6   → Módulo frontera (BorderInfo, AlertsBanner)
+Sec 5.7   → Módulo multilingüe (i18n, LanguageSwitcher)
+Sec 5.8   → Módulo offline (ServiceWorker, OfflineIndicator)
+Sec 5.9   → Módulo analítica (Analytics, Dashboard)
+Sec 6     → No funcionales actualizados (Rendimiento, Seguridad, Usabilidad)
+Sec 7     → Entidades de información (6 entidades con campos detallados)
+
+================================================================================
+8. CONFIGURACIÓN Y DESPLIEGUE
+================================================================================
+
+8.1 VARIABLES DE ENTORNO (.env)
+-------------------------------
+
+VITE_API_BASE_URL=https://api.tu-dominio.com
+VITE_CLOUDINARY_CLOUD_NAME=tu-cloud-name
+VITE_CLOUDINARY_UPLOAD_PRESET=tu-preset
+VITE_MAP_TILE_URL=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+VITE_APP_NAME=Plataforma Turística Fronteriza
+VITE_APP_VERSION=1.0.0
+
+8.2 SCRIPTS DE PACKAGE.JSON
+---------------------------
+
+npm run dev          → Iniciar servidor de desarrollo (Vite)
+npm run build        → Compilar para producción
+npm run preview      → Vista previa de build de producción
+npm run lint         → Ejecutar linter de código
+npm run test         → Ejecutar pruebas unitarias
+
+8.3 CONFIGURACIÓN TAILWIND (tailwind.config.js)
+-----------------------------------------------
+
+Colores Primarios:
+  - primary: '#2D5016' (Verde Bosque - Naturaleza del Barú)
+  - secondary: '#8B4513' (Café Tierra - Cultura)
+  - accent: '#0077BE' (Azul Agua - Ríos y costas)
+
+Tipografías:
+  - heading: 'Montserrat', sans-serif
+  - body: 'Open Sans', sans-serif
+
+Breakpoints:
+  - sm: 640px (móvil grande)
+  - md: 768px (tableta)
+  - lg: 1024px (escritorio pequeño)
+  - xl: 1280px (escritorio grande)
+
+8.4 DESPLIEGUE EN PRODUCCIÓN
+----------------------------
+
+FRONTEND (Vercel):
+1. Conectar repositorio de GitHub
+2. Configurar variables de entorno en Vercel
+3. Build command: npm run build
+4. Output directory: dist
+5. Deploy automático en push a main
+
+BACKEND (Railway):
+1. Conectar repositorio de GitHub
+2. Configurar variables de entorno en Railway
+3. Start command: npm start
+4. Puerto automático asignado por Railway
+5. Base de datos PostgreSQL provisionada en Railway
+
+IMÁGENES (Cloudinary):
+1. Crear cuenta en Cloudinary
+2. Configurar upload preset (unsigned para público)
+3. Configurar transformaciones automáticas (optimización)
+4. Usar URLs de Cloudinary en toda la plataforma
+
+================================================================================
+9. CONSIDERACIONES DE SEGURIDAD
+================================================================================
+
+9.1 AUTENTICACIÓN Y AUTORIZACIÓN
+--------------------------------
+
+- JWT con tokens de acceso (15 min) y refresco (7 días)
+- Tokens almacenados en httpOnly cookies (producción)
+- Refresh token rotativo con invalidación de antiguos
+- Roles de usuario: admin, moderador, visualizador
+- ProtectedRoute wrapper para rutas privadas
+- Interceptors de Axios para manejo automático de tokens
+
+9.2 VALIDACIÓN DE DATOS
+-----------------------
+
+- Validación en cliente con Yup (formularios)
+- Validación en servidor (backend - obligatorio)
+- Sanitización de inputs para prevenir XSS
+- Prepared statements vía ORM para prevenir SQL Injection
+- Límites de tamaño en uploads de imágenes
+
+9.3 COMUNICACIÓN SEGURA
+-----------------------
+
+- HTTPS obligatorio en producción
+- Headers de seguridad (CORS, CSP, HSTS)
+- Rate limiting en endpoints críticos (login, postulación)
+- Logs de auditoría para acciones administrativas
+
+9.4 PROTECCIÓN DE RECURSOS
+--------------------------
+
+- Imágenes servidas desde Cloudinary (no desde servidor)
+- Assets estáticos con cache control
+- API endpoints protegidos por autenticación cuando corresponde
+- Información sensible nunca expuesta en respuestas de API
+
+================================================================================
+10. MÓDULOS ESPECIALES
+================================================================================
+
+10.1 MÓDULO MULTILINGÜE (i18n)
+------------------------------
+
+Archivos:
+  - src/i18n/es.json (Español - idioma por defecto)
+  - src/i18n/en.json (Inglés)
+  - src/i18n/config.js (Configuración de i18next)
+
+Funcionalidad:
+  - Cambio de idioma en tiempo real
+  - Persistencia de preferencia en localStorage
+  - Estructura preparada para más idiomas
+  - Traducción de todos los textos de UI
+
+REQUERIMIENTO: Doc 3, Sec 5.7
+
+10.2 MÓDULO OFFLINE (PWA)
+-------------------------
+
+Archivos:
+  - public/manifest.json (Configuración PWA)
+  - src/hooks/useOffline.js (Detección de conectividad)
+  - src/components/ui/OfflineIndicator.jsx (Aviso visual)
+
+Funcionalidad:
+  - ServiceWorker para cache de páginas visitadas
+  - Cache de imágenes esenciales desde Cloudinary
+  - Formularios completados se guardan en IndexedDB
+  - Sincronización automática al recuperar conexión
+  - Peso liviano optimizado para móvil
+
+REQUERIMIENTO: Doc 3, Sec 5.8
+
+10.3 MÓDULO DE ANALÍTICA
+------------------------
+
+Archivos:
+  - src/components/analytics/Analytics.jsx
+  - src/hooks/useAnalytics.js
+  - src/services/analytics.service.js
+
+Métricas Registradas:
+  - Registros más vistos (por entidad)
+  - Búsquedas más frecuentes (términos)
+  - Categorías con mayor interacción
+  - Zonas con menor cobertura de contenido
+  - Solicitudes pendientes por región/tipo
+
+Visualización:
+  - Dashboard admin con widgets de estadísticas
+  - Gráficos simples para toma de decisiones
+  - Exportación de datos (futuro)
+
+REQUERIMIENTO: Doc 3, Sec 5.9
+
+10.4 MÓDULO DE FAVORITOS
+------------------------
+
+Archivos:
+  - src/context/FavoritesContext.jsx
+  - src/hooks/useFavorites.js (opcional)
+
+Funcionalidad:
+  - Guardar lugares/emprendimientos favoritos
+  - Persistencia en localStorage (sin cuenta)
+  - Futuro: guardar en perfil de usuario (con cuenta)
+  - Lista de favoritos accesible desde cualquier página
+
+REQUERIMIENTO: Doc 3, Sec 5.1.7
+
+10.5 MÓDULO DE INFORMACIÓN FRONTERIZA
+-------------------------------------
+
+Archivos:
+  - src/pages/public/BorderInfo.jsx
+  - src/components/ui/AlertsBanner.jsx
+  - src/services/servicios-frontera.service.js
+
+Contenido:
+  - Puntos de cambio de moneda (ubicación, tasas)
+  - Transporte local y transfronterizo
+  - Horarios y recomendaciones operativas
+  - Enlaces a fuentes gubernamentales oficiales
+  - Alertas temporales de movilidad
+
+REQUERIMIENTO: Doc 3, Sec 5.6
+
+================================================================================
+11. ENTIDADES DE DATOS (Resumen Frontend)
+================================================================================
+
+LugarTuristico (24 campos):
+  - Visualización: CardLugares, DetailsPage
+  - Formulario: AdminForm, SubmissionForm
+  - Filtros: categoría, país, región, zona, verificación
+
+Emprendimiento (21 campos):
+  - Visualización: CardEmprendimiento, DetailsPage
+  - Formulario: AdminForm, SubmissionForm
+  - Filtros: tipo, país, región, zona, verificación
+
+Empresa (similar a Emprendimiento):
+  - Visualización: CardEmpresa, DetailsPage
+  - Formulario: AdminForm
+  - Filtros: rubro, país, región, zona
+
+ServicioFronterizo (13 campos):
+  - Visualización: CardServicioFronterizo, BorderInfo
+  - Formulario: AdminForm
+  - Filtros: tipo_servicio, país, zona, vigencia
+
+Categoria (6 campos):
+  - Visualización: Badge, MapLegend, FilterSidebar
+  - Formulario: CategoryManager
+  - Uso: Clasificación de todas las entidades
+
+SolicitudRegistro (9 campos):
+  - Visualización: ReviewQueue (admin)
+  - Formulario: SubmissionForm (público)
+  - Flujo: Envío → Revisión → Aprobación/Rechazo
+
+UsuarioInterno (7 campos):
+  - Visualización: AdminTopBar, UserManager
+  - Formulario: LoginForm, UserManager
+  - Roles: admin, moderador, visualizador
+
+================================================================================
+12. CHECKLIST DE IMPLEMENTACIÓN
+================================================================================
+
+FASE 1 - CONFIGURACIÓN INICIAL:
+[ ] Configurar proyecto React con Vite
+[ ] Instalar dependencias base (React Router, Axios, Tailwind)
+[ ] Configurar estructura de carpetas
+[ ] Configurar Tailwind con colores del proyecto
+[ ] Configurar variables de entorno (.env)
+[ ] Configurar i18n para multilenguaje
+
+FASE 2 - COMPONENTES BASE:
+[ ] Crear componentes UI (Button, Input, Card, Modal, etc.)
+[ ] Crear componentes de Layout (Navbar, Footer, Sidebar)
+[ ] Crear contexto de Autenticación (AuthContext)
+[ ] Crear contexto de Idioma (LanguageContext)
+[ ] Crear hooks personalizados (useFetch, useOffline, etc.)
+[ ] Configurar Axios con interceptors
+
+FASE 3 - MÓDULO PÚBLICO:
+[ ] Implementar Home.jsx con Hero y destacados
+[ ] Implementar Explorer.jsx con filtros y listados
+[ ] Implementar MapPage.jsx con Leaflet
+[ ] Implementar DetailsPage.jsx con información completa
+[ ] Implementar BorderInfo.jsx con información fronteriza
+[ ] Implementar Postulate.jsx con formulario de postulación
+
+FASE 4 - MÓDULO ADMINISTRADOR:
+[ ] Implementar Login.jsx con autenticación JWT
+[ ] Implementar Dashboard.jsx con estadísticas
+[ ] Implementar CRUD de Lugares
+[ ] Implementar CRUD de Emprendimientos
+[ ] Implementar CRUD de Empresas
+[ ] Implementar ReviewQueue para solicitudes
+[ ] Implementar CategoryManager
+[ ] Implementar UserManager
+
+FASE 5 - INTEGRACIÓN Y OPTIMIZACIÓN:
+[ ] Conectar todos los servicios con API backend
+[ ] Implementar carga de imágenes con Cloudinary
+[ ] Implementar ServiceWorker para PWA/offline
+[ ] Implementar módulo de analítica
+[ ] Optimizar rendimiento (lazy loading, code splitting)
+[ ] Pruebas de usabilidad en móvil
+
+FASE 6 - DESPLIEGUE:
+[ ] Configurar build de producción
+[ ] Desplegar frontend en Vercel
+[ ] Configurar dominio personalizado
+[ ] Pruebas en producción
+[ ] Documentación final
+
+================================================================================
+13. CONTACTO Y SOPORTE
+================================================================================
+
+INSTITUCIONES:
+--------------
+- Universidad Autónoma de Chiriquí (UNACHI) - Centro Regional Universitario De Barú
+- Universidad Tecnológica de Panamá (UTP) - Centro Regional Universitario David
+
+FACULTAD:
+---------
+Facultad de Economía y Informática - Escuela de Informática
+
+PROFESOR ENCARGADO:
+-------------------
+Erick Miranda
+
+ESTUDIANTES:
+------------
+CRUBA y UTP
+
+REPOSITORIO:
+------------
+[https://github.com/FRONTERA-VIVA/FrontCostaPanaViva.git]
+
+DOCUMENTACIÓN ADICIONAL:
+------------------------
+- requerimientos_turisticos.docx
+- Proyecto Turistico PMA Y CR.docx
+- Propuesta requerimientos.docx
+
+================================================================================
+                         FIN DEL DOCUMENTO
+================================================================================
+Última actualización: 2026
+Versión del documento: 1.0
+Clasificación: Interno - Proyecto Académico
+================================================================================

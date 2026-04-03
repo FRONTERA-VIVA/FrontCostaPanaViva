@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Entidad 1: Lugares Turísticos (Geospatial & Logistics)
+model LugarTuristico {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  titulo          String   // Título completo para visualización
+  descripcion     String   @db.Text
+  categoriaId     Int
+  categoria       Categoria @relation(fields: [categoriaId], references: [id])
+  pais            String   // Panamá o Costa Rica
+  region          String
+  zona            String
+  latitud         Float
+  longitud        Float
+  verificado      Boolean  @default(false)
+  
+  // Nuevos campos solicitados
+  sitioWeb        String?
+  contactoLocales String?  // Contacto (locales)
+  contactoGuias   String?  // Contacto (guías)
+  estado          String   @default("activo")    // activo, temporal
+  seguridad       String   @default("publico")   // publico, privado
+  serviciosBasicos Json?    // {luz: bool, agua: bool}
+  transporte      Json?    // {tiempo: string, horario: string}
+  redesSociales   Json?
+  imagenUrl       String?
+  logoUrl         String?
+  atracciones     Json?    // {fauna: string, flora: string, especies: string}
+  experiencia     Json?    // {acampando: bool, atencion: string}
+  rutaLlegada     Json?    // {caminata: string, vehiculo: {tipo: string, privado: bool, comercial: bool}}
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Entidad 2: Emprendimientos Locales
+model Emprendimiento {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  responsable     String
+  tipo            String
+  descripcion     String   @db.Text
+  pais            String
+  region          String
+  zona            String
+  latitud         Float
+  longitud        Float
+  verificado      Boolean  @default(false)
+  imagenUrl       String?
+  contacto        String?
+  redesSociales   Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Entidad 3: Empresas / Comercios
+model Empresa {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  rubro           String
+  descripcion     String   @db.Text
+  pais            String
+  region          String
+  zona            String
+  latitud         Float
+  longitud        Float
+  sitioWeb        String?
+  contacto        String?
+  imagenUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Entidad 4: Servicios Fronterizos (Doc 3, Sec 5.3)
+model ServicioFronterizo {
+  id              Int      @id @default(autoincrement())
+  tipoServicio    String   // Cambio, Transporte, Trámites, etc.
+  nombre          String
+  descripcion     String?  @db.Text
+  pais            String
+  zona            String
+  vigencia        String?
+  latitud         Float?
+  longitud        Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Entidad 5: Categorías (Agrupador)
+model Categoria {
+  id              Int              @id @default(autoincrement())
+  nombre          String           @unique
+  slug            String           @unique
+  tipo            String           // turismo, emprendimiento, etc.
+  lugares         LugarTuristico[]
+  createdAt       DateTime         @default(now())
+}
+
+// Entidad 6: Solicitudes de Registro (Postulaciones)
+model SolicitudRegistro {
+  id              Int      @id @default(autoincrement())
+  nombreEntidad   String
+  tipoEntidad     String
+  descripcion     String   @db.Text
+  contacto        String
+  estado          String   @default("pendiente") // pendiente, aprobado, rechazado
+  observaciones   String?  @db.Text
+  fechaEnvio      DateTime @default(now())
+  fechaRevision   DateTime?
+}
+
+// Entidad 7: Usuarios Internos (Admin)
+model Usuario {
+  id              Int      @id @default(autoincrement())
+  email           String   @unique
+  nombre          String
+  password        String
+  rol             String   @default("moderador") // admin, moderador, visualizador
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
