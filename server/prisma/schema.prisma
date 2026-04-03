@@ -1,0 +1,93 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  correo    String   @unique
+  password  String
+  rol       String   @default("visualizador") // admin, moderador, visualizador
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Categoria {
+  id                 Int                  @id @default(autoincrement())
+  nombre             String               @unique
+  color              String?
+  icon               String?
+  lugaresTuristicos  LugarTuristico[]
+  emprendimientos    Emprendimiento[]
+  serviciosFrontera  ServicioFronterizo[]
+}
+
+model LugarTuristico {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  titulo          String?
+  descripcion_det Json?    // Groups: identificacion, descripcion_det, geospacial, etc.
+  latitud         Float
+  longitud        Float
+  imagen          String?
+  logo            String?
+  verified        Boolean  @default(false)
+  categoria       Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Emprendimiento {
+  id           Int      @id @default(autoincrement())
+  nombre       String
+  descripcion  String?
+  tipo         String?
+  ubicacion    String?
+  contacto     Json?
+  verified     Boolean  @default(false)
+  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId  Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Empresa {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  direccion   String?
+  contacto    Json?
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServicioFronterizo {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  tipo        String?
+  vigencia    Boolean  @default(true)
+  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SolicitudRegistro {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  correo    String
+  detalles  Json
+  estado    String   @default("pendiente") // pendiente, aprobado, rechazado
+  createdAt DateTime @default(now())
+}

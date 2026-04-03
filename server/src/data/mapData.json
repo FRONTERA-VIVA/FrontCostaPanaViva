@@ -1,0 +1,142 @@
+{
+  "center": [8.535, -82.842],
+  "zoom": 13,
+  "categoryStyles": {
+    "aventura": { "color": "#2D5016", "icon": "🌴", "label": "Aventura" },
+    "restaurante": { "color": "#8B4513", "icon": "🍽️", "label": "Restaurante" },
+    "hotel": { "color": "#0077BE", "icon": "🏨", "label": "Hotel" },
+    "servicios": { "color": "#64748b", "icon": "🛂", "label": "Servicios" }
+  },
+  "locations": [
+    {
+      "id": 1,
+      "nombre": "Paso Canoas (Punto de Control)",
+      "titulo": "Terminal de Tránsito Binacional Paso Canoas",
+      "categoria_id": "servicios",
+      "position": [8.534, -82.843],
+      "imagen": "https://images.unsplash.com/photo-1566933293069-b55c7f326dd4?auto=format&fit=crop&q=80&w=400",
+      "logo": "/logos/aduana.png",
+      "verified": true,
+      "identificacion": {
+        "pais": "Costa Rica / Panamá",
+        "provincia": "Chiriquí / Puntarenas",
+        "region": "Barú / Coto Brus",
+        "tipo": "Frontera"
+      },
+      "descripcion_det": {
+        "historia": "Principal punto de intercambio comercial desde 1960.",
+        "caracteristicas": "Tráfico pesado y peatonal constante.",
+        "idiomas": ["Español", "Inglés (básico)"],
+        "moneda": "Dólar (USD) / Colón (CRC)"
+      },
+      "geospacial": {
+        "coordenadas": "8.534, -82.843",
+        "area": "5 km²",
+        "distancias": "0m de la frontera",
+        "geojson": null
+      },
+      "acceso_transporte": {
+        "rutas": ["Carretera Interamericana"],
+        "aeropuertos": ["Enrique Malek (DAV)"],
+        "transporte_publico": "Buses internacionales TicaBus, Tracopa"
+      },
+      "requisitos_entrada": {
+        "documentos": "Pasaporte vigente",
+        "visas": "Exento para la mayoría de latam y UE",
+        "vacunas": "Fiebre Amarilla (ocasional)"
+      },
+      "clima_ambiente": {
+        "temp": "28°C - 34°C",
+        "epocas": "Lluviosa (May-Nov), Seca (Dic-Abr)",
+        "riesgos": "Inundaciones repentinas en temporada alta"
+      },
+      "seguridad_det": {
+        "zonas_peligro": "Baja / Vigilancia constante",
+        "fauna": "Urbana",
+        "emergencias": "911 / SENAFRONT",
+        "riesgos": "Tráfico vehicular"
+      },
+      "servicios_basicos_det": {
+        "agua": true,
+        "luz": true,
+        "salud": "Clínica periférica",
+        "internet": "Fibra óptica",
+        "bancos": "BNP, Caja de Ahorros, BCR"
+      },
+      "actividades_turisticas": ["Compras Duty Free", "Fotografía Transfronteriza"],
+      "alojamiento_det": [{ "nombre": "Hotel Frontera Canas", "contacto": "+507 777-1111", "precio": "$$ - $$$" }],
+      "gastronomia_det": [{ "nombre": "Raíces Barú", "horarios": "11am - 9pm", "plato_estrella": "Pescado Frito" }],
+      "horarios_operacion": { "horarios": "24/7 (Carga)", "temporadas": "Abierto todo el año" },
+      "tarifas_costos": { "entrada": "$0.00", "estimados": "$10 - $50 (Trámites)" },
+      "personal_guias": { "contacto": "Información Turística", "idiomas": ["ES"], "tarifas": "Gratuito" },
+      "biodiversidad": { "ecosistemas": "Urbano", "fauna": "N/A", "ballenas": false, "tortugas": false },
+      "visibilidad_mediatica": { "rating": 4.2, "redes_sociales": "@aduana_pma", "reconocimientos": "Puerta al Pacífico" }
+    },
+    {
+      "id": 3,
+      "nombre": "Eco-Aventura Volcán",
+      "titulo": "Santuario y Aventura Volcán Barú",
+      "categoria_id": "aventura",
+      "position": [8.580, -82.860],
+      "imagen": "https://images.unsplash.com/photo-1575550959106-5a7defe28b56?auto=format&fit=crop&q=80&w=400",
+      "logo": "/logos/aventura.png",
+      "verified": true,
+      "identificacion": { "pais": "Panamá", "provincia": "Chiriquí", "region": "Tierras Altas", "tipo": "Cima / Parque" },
+      "descripcion_det": {
+        "historia": "Punto más alto de Panamá (3,474 msnm).",
+        "caracteristicas": "Vistas de los dos océanos.",
+        "idiomas": ["Español", "Inglés", "Ngäbere"],
+        "moneda": "USD"
+      },
+      "geospacial": { "coordenadas": "8.808, -82.543", "area": "14,322 ha", "distancias": "60km de la frontera", "geojson": null },
+      "acceso_transporte": { "rutas": ["Ruta Volcán-Boquete"], "aeropuertos": "DAV", "transporte_publico": "4x4 Especializado" },
+      "requisitos_entrada": { "documentos": "Registro MiAmbiente", "visas": "N/A", "vacunas": "N/A" },
+      "clima_ambiente": { "temp": "0°C - 15°C", "epocas": "Fresco todo el año", "riesgos": "Hipotermia" },
+      "seguridad_det": { "zonas_peligro": "Senderos rocosos", "fauna": "Quetzal, Puma", "emergencias": "SINAPROC", "riesgos": "Vientos fuertes" },
+      "servicios_basicos_det": { "agua": true, "luz": true, "salud": "No", "internet": "No", "bancos": "No" },
+      "actividades_turisticas": ["Senderismo", "Camping", "Fotografía", "Observación de aves"],
+      "alojamiento_det": [{ "nombre": "Camping Cima", "contacto": "Pre-registro", "precio": "$" }],
+      "gastronomia_det": [{ "nombre": "Café Volcán", "horarios": "Variable", "plato_estrella": "Café Geisha" }],
+      "horarios_operacion": { "horarios": "4:00 AM - 6:00 PM", "temporadas": "Enero-Abril (Mejor clima)" },
+      "tarifas_costos": { "entrada": "$5.00 (Nac) $10.00 (Ext)", "estimados": "$100 (Tour completo)" },
+      "personal_guias": { "contacto": "Guías Certificados", "idiomas": ["ES", "EN", "DE"], "tarifas": "$50 - $120" },
+      "biodiversidad": { "ecosistemas": "Bosque Nuboso", "fauna": "Quetzal", "ballenas": false, "tortugas": false },
+      "visibilidad_mediatica": { "rating": 4.9, "redes_sociales": "#VolcanBaru", "reconocimientos": "Maravilla Natural de Panamá" }
+    },
+    {
+      "id": 4,
+      "nombre": "Hotel Frontera Deluxe",
+      "titulo": "Hotel Boutique y Descanso Frontera",
+      "categoria_id": "hotel",
+      "position": [8.536, -82.841],
+      "imagen": "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&q=80&w=400",
+      "logo": "/logos/hotel.png",
+      "verified": true,
+      "identificacion": { "pais": "Panamá", "provincia": "Chiriquí", "region": "Barú", "tipo": "Hotel" },
+      "descripcion_det": {
+        "historia": "Fundado en 2015 para el viajero moderno.",
+        "caracteristicas": "Estilo minimalista industrial.",
+        "idiomas": ["Español", "Inglés"],
+        "moneda": "USD"
+      },
+      "geospacial": { "coordenadas": "8.536, -82.841", "area": "1,200 m²", "distancias": "100m de la aduana", "geojson": null },
+      "acceso_transporte": {
+        "rutas": ["Calle Principal Canoas"],
+        "aeropuertos": "DAV",
+        "transporte_publico": "Taxis locales, Buses David"
+      },
+      "requisitos_entrada": { "documentos": "DNI o Pasaporte", "visas": "N/A", "vacunas": "N/A" },
+      "clima_ambiente": { "temp": "25°C", "epocas": "Seca", "riesgos": "Sol fuerte" },
+      "seguridad_det": { "zonas_peligro": "Ninguna", "fauna": "Jardines", "emergencias": "Seguridad privada", "riesgos": "Ninguno" },
+      "servicios_basicos_det": { "agua": true, "luz": true, "salud": "Primeros auxilios", "internet": "Alta velocidad", "bancos": "A 50m" },
+      "actividades_turisticas": ["Descanso", "Business Hub"],
+      "alojamiento_det": [{ "nombre": "Standard/Deluxe", "contacto": "Recepcion", "precio": "$85 - $120" }],
+      "gastronomia_det": [{ "nombre": "Barú Bistro", "horarios": "7am - 10pm", "plato_estrella": "Desayuno Típico" }],
+      "horarios_operacion": { "horarios": "24/7", "temporadas": "Todo el año" },
+      "tarifas_costos": { "entrada": "N/A", "estimados": "$100/noche" },
+      "personal_guias": { "contacto": "Conserje", "idiomas": ["ES", "EN"], "tarifas": "N/A" },
+      "biodiversidad": { "ecosistemas": "Urbano", "fauna": "Aves de jardín", "ballenas": false, "tortugas": false },
+      "visibilidad_mediatica": { "rating": 4.5, "redes_sociales": "@hotelfrontera", "reconocimientos": "TripAdvisor Excellence 2024" }
+    }
+  ]
+}
